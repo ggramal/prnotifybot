@@ -1,5 +1,7 @@
 from flask import Flask, abort, make_response, request
 
+app = Flask(__name__)
+
 
 @app.route("/api/v1/webhooks/pr", methods=["POST"])
 def get_pull_request():
