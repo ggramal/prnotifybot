@@ -198,8 +198,11 @@ def get_issue_comment(data):
     data["comment"]["state"] = data["action"]
     data["comment"]["user"] = user
     data["issue"]["pull_request"]["user"] = user
-    data["issue"]["pull_request"]["state"] = None
-    data["issue"]["pull_request"]["title"] = None
+    #data["pull_request"] doesnt have state/title keys
+    #so we need to create them. Empty string here
+    #in order for state.upper() to work in all cases
+    data["issue"]["pull_request"]["state"] = ""
+    data["issue"]["pull_request"]["title"] = ""
 
     pr = PullRequest(**data["issue"]["pull_request"])
 
