@@ -7,8 +7,6 @@ from datetime import datetime
 app = Flask(__name__)
 webhook = Webhook(app,endpoint="/webhooks/pr")
 pr_dict = {}
-now = datetime.now()
-now = now.strftime("%Y-%m-%d %H:%M:%S")
 
 
 @dataclass(init=False)
@@ -44,6 +42,8 @@ class PullRequest(GitHubEntity):
         return  hash((self.html_url))
 
     def __str__(self):
+        now = datetime.now()
+        now = now.strftime("%Y-%m-%d %H:%M:%S")
         emoji = ""
         if self.merged_at:
             self.state = "merged"
@@ -57,7 +57,7 @@ class PullRequest(GitHubEntity):
             return now + f" {self.user} pushed"
 
 
-        return f"[{self.state}{emoji}] {self.title} {self.html_url}"
+        return f'[{self.state}{emoji}] "{self.title}" {self.html_url}'
 
 @dataclass(init=False)
 class PullRequestReview(GitHubEntity):
@@ -66,6 +66,8 @@ class PullRequestReview(GitHubEntity):
     state: str
 
     def __str__(self):
+        now = datetime.now()
+        now = now.strftime("%Y-%m-%d %H:%M:%S")
         emoji = ""
         if self.state == "approved":
             emoji = " :heavy_check_mark:"
@@ -79,6 +81,8 @@ class PullRequestReviewComment(GitHubEntity):
     state: str
 
     def __str__(self):
+        now = datetime.now()
+        now = now.strftime("%Y-%m-%d %H:%M:%S")
         return now + f" {self.user} {self.state} comment {self.html_url}"
 
 @dataclass(init=False)
@@ -90,7 +94,12 @@ class IssueComment(GitHubEntity):
     def __str__(self):
         return now + f" {self.user} {self.state} issue comment {self.html_url}"
 
-
+class Message:
+    def __init__(self, text, telegram=True):
+        self.text = text
+        self.telegram = telegram
+    def send_message(self):
+        print(self.text)
 
 @webhook.hook("pull_request")
 def get_pull_request(data):
@@ -100,18 +109,20 @@ def get_pull_request(data):
     data = data["pull_request"]
     data["user"] = GitHubUser(**data["user"])
     pr = PullRequest(**data)
-    message = f"{pr}"
-    if pr in pr_dict.keys():
-        if pr.state == "pushed":
-            message = f"{pr_dict[pr]}\n{pr}"
-        else:
-            message_lines = pr_dict[pr].split('\n')
-            pr_lines = str(pr).split('\n')
-            message_lines[0] = pr_lines[0]
-            message = '\n'.join(message_lines)
+    pr_in_dict = pr in pr_dict.keys()
 
-    pr_dict[pr] = message
-    print(pr_dict[pr])
+    if not pr_in_dict:
+        pr_dict[pr] = Message(f"{pr}")
+    elif pr_in_dict and pr.state == "pushed":
+        pr_dict[pr].text = f"{pr_dict[pr].text}\n{pr}"
+    elif pr_in_dict:
+        message_lines = pr_dict[pr].text.split('\n')
+        pr_lines = str(pr).split('\n')
+        message_lines[0] = pr_lines[0]
+        pr_dict[pr].text = '\n'.join(message_lines)
+
+
+    pr_dict[pr].send_message()
     return {"status":"ok"}
 
 @webhook.hook("pull_request_review")
@@ -131,11 +142,11 @@ def get_pull_request_review(data):
     if pr_review.state == "commented": return {"status": "ok"}
 
     if pr in pr_dict.keys():
-        pr_dict[pr] = f"{pr_dict[pr]}\n{pr_review}"
+        pr_dict[pr].text = f"{pr_dict[pr].text}\n{pr_review}"
     else:
-        pr_dict[pr] = f"{pr}\n{pr_review}"
+        pr_dict[pr] = Message(f"{pr}\n{pr_review}")
 
-    print(pr_dict[pr])
+    pr_dict[pr].send_message()
     return {"status":"ok"}
 
 @webhook.hook("pull_request_review_comment")
@@ -154,10 +165,11 @@ def get_pull_request_review_comment(data):
     pr_review_comment = PullRequestReviewComment(**data)
 
     if pr in pr_dict.keys():
-        pr_dict[pr] = f"{pr_dict[pr]}\n{pr_review_comment}"
+        pr_dict[pr].text = f"{pr_dict[pr].text}\n{pr_review_comment}"
     else:
-        pr_dict[pr] = f"{pr}\n{pr_review_comment}"
-    print(pr_dict[pr])
+        pr_dict[pr] = Message(f"{pr}\n{pr_review_comment}")
+
+    pr_dict[pr].send_message()
     return {"status":"ok"}
 
 @webhook.hook("issue_comment")
@@ -178,10 +190,11 @@ def get_issue_comment(data):
     issue_comment = IssueComment(**data)
 
     if pr in pr_dict.keys():
-        pr_dict[pr] = f"{pr_dict[pr]}\n{issue_comment}"
+        pr_dict[pr].text = f"{pr_dict[pr].text}\n{issue_comment}"
     else:
-        pr_dict[pr] = f"{pr}\n{issue_comment}"
-    print(pr_dict[pr])
+        pr_dict[pr] = Message(f"{pr}\n{issue_comment}")
+
+    pr_dict[pr].send_message()
     return {"status":"ok"}
 
 
