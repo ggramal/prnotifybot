@@ -1,3 +1,5 @@
+import config
+
 from flask import Flask, abort, make_response, request
 from github_webhook import Webhook
 from dataclasses import dataclass, fields
