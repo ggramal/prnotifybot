@@ -1,14 +1,17 @@
 import config
+import asyncio
 
 from flask import Flask, abort, make_response, request
 from github_webhook import Webhook
 from dataclasses import dataclass, fields
 from collections import UserDict
 from datetime import datetime
+from telethon import TelegramClient
 
 app = Flask(__name__)
 webhook = Webhook(app,endpoint="/webhooks/pr")
 pr_dict = {}
+loop = asyncio.get_event_loop()
 
 
 @dataclass(init=False)
@@ -49,17 +52,17 @@ class PullRequest(GitHubEntity):
         emoji = ""
         if self.merged_at:
             self.state = "merged"
-            emoji = " :arrow_heading_down:"
+            emoji = " \U00002935" #:arrow_heading_down:
         elif self.state == "closed":
-            emoji = " :x:"
+            emoji = " \U0000274c" #:x:
         elif self.state == "open":
-            emoji = " :sparkles:"
+            emoji = " \U00002728" #:sparkles:
 
         if self.state == "pushed":
             return now + f" {self.user} pushed"
 
 
-        return f'[{self.state}{emoji}] "{self.title}" {self.html_url}'
+        return f'[{self.state.upper()}{emoji}] "{self.title}" {self.html_url}'
 
 @dataclass(init=False)
 class PullRequestReview(GitHubEntity):
@@ -72,7 +75,7 @@ class PullRequestReview(GitHubEntity):
         now = now.strftime("%Y-%m-%d %H:%M:%S")
         emoji = ""
         if self.state == "approved":
-            emoji = " :heavy_check_mark:"
+            emoji = " \U00002714" #:heavy_check_mark:
 
         return now + f" {self.user} {self.state}{emoji}"
 
@@ -85,7 +88,7 @@ class PullRequestReviewComment(GitHubEntity):
     def __str__(self):
         now = datetime.now()
         now = now.strftime("%Y-%m-%d %H:%M:%S")
-        return now + f" {self.user} {self.state} comment {self.html_url}"
+        return now + f" {self.user} {self.state} [comment]({self.html_url})"
 
 @dataclass(init=False)
 class IssueComment(GitHubEntity):
@@ -94,14 +97,28 @@ class IssueComment(GitHubEntity):
     state: str
 
     def __str__(self):
-        return now + f" {self.user} {self.state} issue comment {self.html_url}"
+        now = datetime.now()
+        now = now.strftime("%Y-%m-%d %H:%M:%S")
+        return now + f" {self.user} {self.state} [issue comment]({self.html_url})"
 
 class Message:
     def __init__(self, text, telegram=True):
         self.text = text
+        self.__message = None
         self.telegram = telegram
-    def send_message(self):
-        print(self.text)
+
+    def send(self):
+        if self.telegram:
+            loop.run_until_complete(self._telegram_send())
+        else:
+            raise NotImplementedError
+
+    async def _telegram_send(self):
+        dialogs = await tg_client.get_dialogs()
+        if not self.__message:
+            self.__message = await tg_client.send_message(config.TG_CHAT_NAME, self.text)
+        else:
+            await tg_client.edit_message(self.__message, self.text)
 
 @webhook.hook("pull_request")
 def get_pull_request(data):
@@ -124,7 +141,7 @@ def get_pull_request(data):
         pr_dict[pr].text = '\n'.join(message_lines)
 
 
-    pr_dict[pr].send_message()
+    pr_dict[pr].send()
     return {"status":"ok"}
 
 @webhook.hook("pull_request_review")
@@ -148,7 +165,7 @@ def get_pull_request_review(data):
     else:
         pr_dict[pr] = Message(f"{pr}\n{pr_review}")
 
-    pr_dict[pr].send_message()
+    pr_dict[pr].send()
     return {"status":"ok"}
 
 @webhook.hook("pull_request_review_comment")
@@ -171,7 +188,7 @@ def get_pull_request_review_comment(data):
     else:
         pr_dict[pr] = Message(f"{pr}\n{pr_review_comment}")
 
-    pr_dict[pr].send_message()
+    pr_dict[pr].send()
     return {"status":"ok"}
 
 @webhook.hook("issue_comment")
@@ -196,10 +213,12 @@ def get_issue_comment(data):
     else:
         pr_dict[pr] = Message(f"{pr}\n{issue_comment}")
 
-    pr_dict[pr].send_message()
+    pr_dict[pr].send()
     return {"status":"ok"}
 
 
 
 if __name__ == "__main__":
+    tg_client = TelegramClient("./tgdata/dat", config.TG_API_ID, config.TG_API_HASH, loop=loop)
+    tg_client.start()
     app.run(host="0.0.0.0")
