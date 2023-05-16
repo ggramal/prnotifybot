@@ -7,6 +7,7 @@ from dataclasses import dataclass, fields
 from collections import UserDict
 from datetime import datetime
 from telethon import TelegramClient
+from telethon.errors.rpcerrorlist import MessageNotModifiedError
 
 app = Flask(__name__)
 webhook = Webhook(app,endpoint="/webhooks/pr")
@@ -140,8 +141,11 @@ def get_pull_request(data):
         message_lines[0] = pr_lines[0]
         pr_dict[pr].text = '\n'.join(message_lines)
 
+    try:
+        pr_dict[pr].send()
+    except MessageNotModifiedError:
+        app.logger.warning(f"Message was not modified.\n{pr_dict[pr].text}")
 
-    pr_dict[pr].send()
     return {"status":"ok"}
 
 @webhook.hook("pull_request_review")
@@ -165,7 +169,11 @@ def get_pull_request_review(data):
     else:
         pr_dict[pr] = Message(f"{pr}\n{pr_review}")
 
-    pr_dict[pr].send()
+    try:
+        pr_dict[pr].send()
+    except MessageNotModifiedError:
+        app.logger.warning(f"Message was not modified.\n{pr_dict[pr].text}")
+
     return {"status":"ok"}
 
 @webhook.hook("pull_request_review_comment")
@@ -188,7 +196,11 @@ def get_pull_request_review_comment(data):
     else:
         pr_dict[pr] = Message(f"{pr}\n{pr_review_comment}")
 
-    pr_dict[pr].send()
+    try:
+        pr_dict[pr].send()
+    except MessageNotModifiedError:
+        app.logger.warning(f"Message was not modified.\n{pr_dict[pr].text}")
+
     return {"status":"ok"}
 
 @webhook.hook("issue_comment")
@@ -216,7 +228,11 @@ def get_issue_comment(data):
     else:
         pr_dict[pr] = Message(f"{pr}\n{issue_comment}")
 
-    pr_dict[pr].send()
+    try:
+        pr_dict[pr].send()
+    except MessageNotModifiedError:
+        app.logger.warning(f"Message was not modified.\n{pr_dict[pr].text}")
+
     return {"status":"ok"}
 
 
