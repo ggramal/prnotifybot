@@ -4,20 +4,27 @@ Send notifications about pull requests(PR) to chats. Supported chat platforms - 
 
 ## How it works
 * Sends a message in format
+
 `[<CLOSED|OPEN|MERGED>] <PR title> <PR url>` - message header
+
 * if the status of the PR has changed eg its closed,opened,merged. prnotifybot will edit the notification message and reflect those changes in its header
 * if some one pushed code to the source branch of the PR. Notification message for this PR will be edited and new line will be added
+
 `<timestamp> <user> pushed`
+
 * if someone created/edited/deleted a comment or issue comment. Notification message for this PR will be edited with a new line
+
 `<timestamp> <user> <created|deleted|edited> [comment](<link_to_comment>)`
+
 * if someone approved the PR Notification message for this PR will be edited with a new line
+
 `<timestamp> <user> approved :heavy_check_mark:`
 
 
 
 ## Issues
 Currently prnotifybot stores message ids and thier corresponding messages in memory.
-So after restart of the app new pr notification messages will be sent if one of the events described in [How it works](##-How-it-works) occur
+So after restart of the app new pr notification messages will be sent if one of the events described in [How it works](#how-it-works) occur
 
 ## Installation
 
