@@ -1,3 +1,4 @@
 *.session
 .env
+tgdata
 __pycache__
