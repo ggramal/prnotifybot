@@ -13,4 +13,5 @@ WORKDIR /app
 
 RUN poetry install && mkdir -p /app/tgdata
 
-ENTRYPOINT ["poetry", "run", "python", "main.py"]
+ENTRYPOINT ["poetry", "run"]
+CMD ["python", "main.py"]
