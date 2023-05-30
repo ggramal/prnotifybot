@@ -38,16 +38,16 @@ Not supported yet (TBD)
 3. Clone this project `git clone https://github.com/ggramal/smo_metrics.git`
 4. Copy `.env.example` from project root to `.env` eg `cp ./.env.example ./.env`
 5. Adjust variables  in `.env` file. where
-  1. `TG_API_ID` - `App app_id` copied from step 2
-  2. `TG_API_HASH` - `App app_hash` copied from step 2
-  3. `TG_CHAT_NAME` - Name of the channel or chat where to send notifications
+  - `TG_API_ID` - `App app_id` copied from step 2
+  - `TG_API_HASH` - `App app_hash` copied from step 2
+  - `TG_CHAT_NAME` - Name of the channel or chat where to send notifications
 6. In root of the project run `docker-compose up -d`
 7. Run `docker attach prnotifybot`
 8. Enter your phone number and press enter
 9. Enter the authentication code that is sent to one of your telegram sessions
 10. Under your github project goto `Settings -> Webhooks -> Add webhook`
-  1. Set payload URL to `<http|https>://your_host/webhooks/pr`. EXAMPLE: `http://34.116.235.241/webhooks/pr`
-  2. Set content type `application/json`
-  3. Set `send me everything` option
-  4. Save
+  - Set payload URL to `<http|https>://your_host/webhooks/pr`. EXAMPLE: `http://34.116.235.241/webhooks/pr`
+  - Set content type `application/json`
+  - Set `send me everything` option
+  - Save
 11. Make a PR you should recieve a notification in the chat defined in `TG_CHAT_NAME`
