@@ -2,6 +2,8 @@
 
 Send notifications about pull requests(PR) to chats. Supported chat platforms - Telegram
 
+![tg](img/tg.png)
+
 ## How it works
 * Sends a message in format
 
