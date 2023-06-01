@@ -53,3 +53,5 @@ Not supported yet (TBD)
   - Set `send me everything` option
   - Save
 11. Make a PR you should recieve a notification in the chat defined in `TG_CHAT_NAME`
+
+
