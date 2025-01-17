@@ -10,10 +10,10 @@ from telethon import TelegramClient
 from telethon.errors.rpcerrorlist import MessageNotModifiedError
 
 app = Flask(__name__)
-webhook = Webhook(app,endpoint="/webhooks/pr")
+webhook = Webhook(app,endpoint="/webhooks/pr",secret=config.WH_SECRET)
 pr_dict = {}
 loop = asyncio.get_event_loop()
-
+print(config.WH_SECRET)
 
 @dataclass(init=False)
 class GitHubEntity:

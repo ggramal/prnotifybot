@@ -37,7 +37,7 @@ Not supported yet (TBD)
 
 1. Register an app using https://my.telegram.org
 2. Copy `App api_id` and `App api_hash`
-3. Clone this project `git clone https://github.com/ggramal/smo_metrics.git`
+3. Clone this project
 4. Copy `.env.example` from project root to `.env` eg `cp ./.env.example ./.env`
 5. Adjust variables  in `.env` file. where
   - `TG_API_ID` - `App app_id` copied from step 2

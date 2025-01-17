@@ -2,6 +2,7 @@
 name = "prnotifybot"
 version = "0.1.0"
 description = ""
+package-mode = false
 authors = ["Gramovich Alexander <gramovich.alex@outlook.com>"]
 readme = "README.md"
 
