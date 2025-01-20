@@ -1,5 +1,7 @@
 # prnotifybot
 
+Inspired by https://github.com/artemsre/gitlabMRNotify
+
 Send notifications about pull requests(PR) to chats. Supported chat platforms - Telegram
 
 ![tg](img/tg.png)
@@ -37,12 +39,13 @@ Not supported yet (TBD)
 
 1. Register an app using https://my.telegram.org
 2. Copy `App api_id` and `App api_hash`
-3. Clone this project `git clone https://github.com/ggramal/smo_metrics.git`
+3. Clone this project
 4. Copy `.env.example` from project root to `.env` eg `cp ./.env.example ./.env`
 5. Adjust variables  in `.env` file. where
   - `TG_API_ID` - `App app_id` copied from step 2
   - `TG_API_HASH` - `App app_hash` copied from step 2
   - `TG_CHAT_NAME` - Name of the channel or chat where to send notifications
+  - `WH_SECRET` - Optional secret, used to authenticate the hook comes from Github
 6. In root of the project run `docker-compose up -d`
 7. Run `docker attach prnotifybot`
 8. Enter your phone number and press enter
