@@ -16,6 +16,7 @@ services:
       TG_API_HASH: ${TG_API_HASH}
       TG_CHAT_NAME: ${TG_CHAT_NAME}
       WH_SECRET: ${WH_SECRET}
+      TIMEZONE: ${TIMEZONE}
     volumes:
       - tgdata:/app/tgdata
 

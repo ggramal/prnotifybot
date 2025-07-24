@@ -46,6 +46,7 @@ Not supported yet (TBD)
   - `TG_API_HASH` - `App app_hash` copied from step 2
   - `TG_CHAT_NAME` - Name of the channel or chat where to send notifications
   - `WH_SECRET` - Optional secret, used to authenticate the hook comes from Github
+  - `TIMEZONE` - Optional variable, your timezone (like 'Europe/London' or 'Europe/Minsk'), default 'UTC'
 6. In root of the project run `docker-compose up -d`
 7. Run `docker attach prnotifybot`
 8. Enter your phone number and press enter

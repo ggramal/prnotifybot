@@ -51,7 +51,7 @@ class PullRequest(GitHubEntity):
         return hash((self.html_url))
 
     def __str__(self):
-        now = datetime.now(ZoneInfo(timezone))
+        now = datetime.now(ZoneInfo(config.TIMEZONE))
         now = now.strftime("%Y-%m-%d %H:%M:%S")
         emoji = ""
         if self.merged_at:
@@ -75,7 +75,7 @@ class PullRequestReview(GitHubEntity):
     state: str
 
     def __str__(self):
-        now = datetime.now(ZoneInfo(timezone))
+        now = datetime.now(ZoneInfo(config.TIMEZONE))
         now = now.strftime("%Y-%m-%d %H:%M:%S")
         emoji = ""
         if self.state == "approved":
@@ -91,7 +91,7 @@ class PullRequestReviewComment(GitHubEntity):
     state: str
 
     def __str__(self):
-        now = datetime.now(ZoneInfo(timezone))
+        now = datetime.now(ZoneInfo(config.TIMEZONE))
         now = now.strftime("%Y-%m-%d %H:%M:%S")
         return now + f" {self.user} {self.state} [comment]({self.html_url})"
 
@@ -103,7 +103,7 @@ class IssueComment(GitHubEntity):
     state: str
 
     def __str__(self):
-        now = datetime.now(ZoneInfo(timezone))
+        now = datetime.now(ZoneInfo(config.TIMEZONE))
         now = now.strftime("%Y-%m-%d %H:%M:%S")
         return now + f" {self.user} {self.state} [issue comment]({self.html_url})"
 
